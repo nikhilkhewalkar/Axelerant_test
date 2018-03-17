@@ -1,0 +1,47 @@
+<?php
+
+
+/**
+ * Implements hook_form_alter().
+ * To add text field.
+ */
+function site_info_apikey_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id)
+{
+    if ($form_id == 'system_site_information_settings'){
+
+        //$site_api_key = \Drupal::config('siteapi.settings');
+        if (\Drupal::config('siteapi.settings')->get('siteapikey') != null){
+            $site_api_key= \Drupal::config('siteapi.settings')->get('siteapikey');
+        }
+        else{
+            $site_api_key = "No API Key yet";   //Default value
+        }
+        $form['site_information']['site_api_key']= array(
+            '#type' => 'textfield',
+            '#title' => t('Site API Key'),
+            '#default_value' => $site_api_key,
+            '#description' => t('Site API Key to pass in JSON format.'),
+        );
+
+        // If API Key value already set then Change the text to the "Update Configuration" instead of "Save configuration" button.
+        if ( $site_api_key != "No API Key yet" ) {
+            $form['actions']['submit']['#value'] = t('Update Configuration');
+        }
+        $form['actions']['submit']['#submit'][] = 'site_info_apikey_form_submit';   //Submit_handler
+    }
+}
+
+
+function site_info_apikey_form_submit(array &$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id){
+
+    $siteapikey = $form_state->getValue('site_api_key');
+    // Save API key to variable site_api_key.
+    if ($siteapikey != 'No API Key yet' && $siteapikey  != NULL) {
+
+        $config = \Drupal::service('config.factory')->getEditable('siteapi.settings');
+        $config->set('siteapikey', $siteapikey )
+            ->save();
+
+        drupal_set_message(t('Site API Key has been saved with the value %apiKey', ['%apiKey' => $siteapikey ]));
+    }
+}
