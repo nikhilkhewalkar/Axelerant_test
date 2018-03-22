@@ -45,10 +45,14 @@ Class SiteInfoApikeyController extends ControllerBase{
                     $data = ['http_code' => '403', 'values' => ['Err_msg' => 'Access denied',
                         'Solution' => t('Accept content of only page content type.')]];
                 }
-            }
-        }
-        $data = ['http_code' => '403', 'values' => ['Err_msg' => 'Access denied',
-            'Solution' => t('Please Enter Valid Node Id')]];
+            } else {
+                   $data = ['http_code' => '403', 'values' => ['Err_msg' => 'Access denied',
+                            'Solution' => t('Please Enter Valid siteapikey')]];
+            }   
+        }else {
+               $data = ['http_code' => '403', 'values' => ['Err_msg' => 'Access denied',
+                        'Solution' => t('Please Enter Valid Node Id')]];
+             }
 
         $response = new Response(
             json_encode($data),
